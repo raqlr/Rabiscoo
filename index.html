@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>Desenha Comigo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --adult-bg: #FED030;
+    --adult-card: #f0bc10;
+    --adult-accent: #b8860b;
+    --adult-border: rgba(0,0,0,0.10);
+    --child-bg: #f4f6ff;
+    --canvas-bg: #ffffff;
+    --canvas-border: #d0d8f5;
+    --toolbar-bg: #ffffff;
+    --green: #16a34a;
+    --green-hover: #15803d;
+    --red: #dc2626;
+    --red-hover: #b91c1c;
+    --timer-track: rgba(0,0,0,0.12);
+    --timer-warn: #f97316;
+    --timer-ok: #fbbf24;
+    --star-gold: #fbbf24;
+    --font-main: 'Nunito', sans-serif;
+    --font-body: 'Nunito Sans', sans-serif;
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 26px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: #0f0e1c;
+    font-family: var(--font-main);
+  }
+
+  /* ─── LAYOUT ROOT ─── */
+  #app {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    position: relative;
+  }
+
+  /* ════════════════════════════════ ADULT ZONE  (left column) ════════════════════════════════ */
+  #adult-zone {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--adult-bg);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 16px 16px;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* subtle inner-right shadow to separate zones */
+  #adult-zone::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: rgba(255,255,255,0.06);
+  }
+
+  .zone-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.40);
+    margin-bottom: 2px;
+  }
+
+  /* ── CARD ── */
+  #card {
+    background: rgba(255,255,255,0.45);
+    border-radius: var(--radius-lg);
+    padding: 16px 16px 14px;
+    border: 1px solid rgba(0,0,0,0.08);
+    position: relative;
+    overflow: hidden;
+  }
+  #card::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.05);
+  }
+
+  .card-meta {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.40);
+    margin-bottom: 8px;
+  }
+  .card-progress {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+  }
+  .card-pip {
+    flex: 1; height: 3px; border-radius: 99px;
+    background: rgba(0,0,0,0.15);
+    transition: background .3s;
+  }
+  .card-pip.done { background: #b8860b; }
+  .card-pip.current { background: #7c4f00; }
+
+  #card-text {
+    font-family: var(--font-main);
+    font-size: 22px;
+    font-weight: 900;
+    color: #1a1000;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+    min-height: 54px;
+    transition: opacity .2s;
+  }
+
+  .card-stars {
+    display: flex;
+    gap: 4px;
+    margin-top: 10px;
+  }
+  .card-star {
+    width: 14px; height: 14px;
+    background: var(--star-gold);
+    clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+    transition: transform .2s;
+  }
+  .card-star.off { background: rgba(0,0,0,0.18); }
+
+  /* ── HINT ── */
+  #hint-btn {
+    background: rgba(0,0,0,0.07);
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    color: rgba(0,0,0,0.70);
+    font-family: var(--font-main);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background .15s, border-color .15s;
+    text-align: left;
+  }
+  #hint-btn:hover { background: rgba(0,0,0,0.12); border-color: rgba(0,0,0,0.22); }
+  #hint-btn:active { transform: scale(0.97); }
+  .hint-ico {
+    width: 28px; height: 28px; flex-shrink: 0;
+    background: rgba(0,0,0,0.10);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+  #hint-text { font-size: 11px; color: rgba(0,0,0,0.45); font-weight: 600; margin-top: 1px; }
+
+  /* ── TIMER ── */
+  .timer-section { display: flex; flex-direction: column; gap: 6px; }
+  .timer-row { display: flex; align-items: center; justify-content: space-between; }
+  .timer-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(0,0,0,0.40); }
+  #timer-display {
+    font-family: var(--font-main);
+    font-size: 26px;
+    font-weight: 900;
+    color: #7c4f00;
+    letter-spacing: -1px;
+    transition: color .3s;
+  }
+  #timer-display.warn { color: #c0390a; }
+  #timer-display.danger { color: #b91c1c; animation: pulse .5s ease infinite alternate; }
+  @keyframes pulse { from { opacity: 1; } to { opacity: .5; } }
+
+  .timer-track {
+    width: 100%; height: 10px;
+    background: var(--timer-track);
+    border-radius: 99px; overflow: hidden;
+  }
+  #timer-bar {
+    height: 100%; border-radius: 99px;
+    background: #7c4f00;
+    transition: width .1s linear, background .3s;
+  }
+
+  /* ── DIVIDER ── */
+  .divider { height: 1px; background: rgba(0,0,0,0.10); flex-shrink: 0; }
+
+  /* ── LEVEL BADGE ── */
+  .level-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+  }
+  .level-ico {
+    width: 32px; height: 32px; border-radius: 10px;
+    background: rgba(0,0,0,0.10);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .level-info { flex: 1; min-width: 0; }
+  .level-title { font-size: 11px; font-weight: 800; color: rgba(0,0,0,0.55); letter-spacing: .5px; }
+  .level-xp-track { height: 4px; background: rgba(0,0,0,0.12); border-radius: 99px; margin-top: 4px; overflow: hidden; }
+  .level-xp-fill { height: 100%; width: 60%; background: #7c4f00; border-radius: 99px; }
+
+  /* ── DECISION BUTTONS ── */
+  .decision-section { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+  .dec-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(0,0,0,0.35); }
+
+  .btn-correct {
+    width: 100%; height: 48px;
+    background: var(--green);
+    border: none; border-radius: var(--radius-md);
+    color: #fff;
+    font-family: var(--font-main);
+    font-size: 15px; font-weight: 800;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    letter-spacing: .3px;
+    transition: background .15s, transform .1s;
+    position: relative; overflow: hidden;
+  }
+  .btn-correct:hover { background: var(--green-hover); }
+  .btn-correct:active { transform: scale(0.97); }
+  .btn-correct .btn-ico { font-size: 18px; }
+
+  .btn-retry {
+    width: 100%; height: 44px;
+    background: rgba(220,38,38,0.57);
+    border: 2px solid var(--red);
+    border-radius: var(--radius-md);
+    color: #fff;
+    font-family: var(--font-main);
+    font-size: 14px; font-weight: 800;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background .15s, transform .1s, border-color .15s;
+  }
+  .btn-retry:hover { background: rgba(220,38,38,0.75); border-color: #ef4444; }
+  .btn-retry:active { transform: scale(0.97); }
+
+  /* ripple */
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    animation: rip .5s ease-out forwards;
+    pointer-events: none;
+    transform: scale(0);
+  }
+  @keyframes rip { to { transform: scale(4); opacity: 0; } }
+
+
+  /* ════════════════════════════════ CHILD ZONE  (right main area) ════════════════════════════════ */
+  #child-zone {
+    flex: 1;
+    background: var(--child-bg);
+    display: flex;
+    flex-direction: column;
+    padding: 16px 18px 14px;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* subtle dot-grid background */
+  #child-zone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, #c5cde8 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .child-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    position: relative; z-index: 1;
+  }
+  .child-zone-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8896c0;
+  }
+  .child-score {
+    display: flex; align-items: center; gap: 6px;
+    background: #fff;
+    border: 1px solid #d8e0f5;
+    border-radius: 99px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #4a5080;
+  }
+  .score-star { width: 13px; height: 13px; background: var(--star-gold); clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%); }
+
+  /* ── CANVAS ── */
+  #canvas-wrap {
+    flex: 1;
+    background: var(--canvas-bg);
+    border-radius: var(--radius-xl);
+    border: 2.5px dashed var(--canvas-border);
+    position: relative;
+    overflow: hidden;
+    cursor: crosshair;
+    z-index: 1;
+    transition: border-color .2s;
+  }
+  #canvas-wrap.active { border-color: var(--adult-accent); border-style: solid; }
+  #canvas-wrap.locked { cursor: not-allowed; border-color: #ef4444; border-style: solid; }
+
+  /* ── TIME-UP OVERLAY (inside canvas) ── */
+  #timeup-overlay {
+    position: absolute; inset: 0; z-index: 5;
+    background: rgba(239,68,68,0.10);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 10px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .35s;
+    border-radius: calc(var(--radius-xl) - 2px);
+  }
+  #timeup-overlay.show { opacity: 1; pointer-events: all; }
+
+  .timeup-icon {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: #ef4444;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px;
+    animation: timeup-pop .4s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  @keyframes timeup-pop { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+
+  .timeup-title {
+    font-family: var(--font-main);
+    font-size: 22px; font-weight: 900;
+    color: #ef4444; letter-spacing: -0.5px;
+    animation: timeup-pop .4s .08s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .timeup-sub {
+    font-size: 13px; font-weight: 700;
+    color: #9bacd4; text-align: center; line-height: 1.5;
+    animation: timeup-pop .4s .15s cubic-bezier(.34,1.56,.64,1) both;
+  }
+
+  /* toolbar disabled state */
+  #toolbar.locked { opacity: 0.38; pointer-events: none; }
+
+  /* adult zone highlight when awaiting evaluation */
+  #adult-zone.awaiting .decision-section {
+    background: rgba(0,0,0,0.06);
+    border-radius: var(--radius-md);
+    padding: 10px;
+    margin: 0 -4px;
+    border: 1.5px solid rgba(0,0,0,0.20);
+    animation: awaiting-pulse 1.4s ease infinite alternate;
+  }
+  @keyframes awaiting-pulse {
+    from { border-color: rgba(0,0,0,0.15); }
+    to   { border-color: rgba(0,0,0,0.40); }
+  }
+  #adult-zone.awaiting .dec-label { color: rgba(0,0,0,0.55); }
+
+  #draw-canvas {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    touch-action: none;
+  }
+
+  .canvas-placeholder {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center; pointer-events: none;
+    transition: opacity .3s;
+  }
+  .canvas-placeholder .ph-icon { font-size: 52px; opacity: .13; }
+  .canvas-placeholder p {
+    font-size: 14px; color: #b5c0dc;
+    font-weight: 700; margin-top: 8px; letter-spacing: .3px;
+  }
+
+  /* ── TOOLBAR ── */
+  #toolbar {
+    background: var(--toolbar-bg);
+    border-radius: var(--radius-lg);
+    border: 1.5px solid #dce5f5;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    z-index: 1;
+    position: relative;
+  }
+
+  .tool-sep { width: 1px; height: 28px; background: #e0e8f5; flex-shrink: 0; margin: 0 2px; }
+
+  .tool-btn {
+    width: 40px; height: 40px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    background: #f4f6ff;
+    transition: background .12s, border-color .12s, transform .1s;
+    flex-shrink: 0;
+  }
+  .tool-btn:hover { background: #e8eeff; }
+  .tool-btn:active { transform: scale(0.9); }
+  .tool-btn.active {
+    background: #eeeeff;
+    border-color: var(--adult-accent);
+    box-shadow: 0 0 0 3px rgba(124,111,255,0.15);
+  }
+
+  /* stroke-width selector */
+  .size-btns { display: flex; gap: 5px; align-items: center; }
+  .size-btn {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    border: 1.5px solid transparent;
+    background: #f4f6ff;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .12s, border-color .12s;
+    flex-shrink: 0;
+  }
+  .size-btn:hover { background: #e8eeff; }
+  .size-btn.active { border-color: var(--adult-accent); background: #eeeeff; }
+  .size-dot { border-radius: 50%; background: #4a5080; }
+
+  /* color dots */
+  .color-dot {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: none; cursor: pointer;
+    position: relative; flex-shrink: 0;
+    transition: transform .1s;
+  }
+  .color-dot:active { transform: scale(0.85); }
+  .color-dot.selected::after {
+    content: '';
+    position: absolute; inset: -4px;
+    border-radius: 50%;
+    border: 2.5px solid var(--adult-accent);
+  }
+  .color-dot.selected::before {
+    content: '';
+    position: absolute; inset: -7px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(124,111,255,0.25);
+  }
+
+  #clear-btn {
+    margin-left: auto;
+    background: #fff2f2;
+    border: 1.5px solid #ffd5d5;
+    border-radius: var(--radius-sm);
+    padding: 0 14px;
+    height: 40px;
+    font-family: var(--font-main);
+    font-size: 12px; font-weight: 800;
+    color: #dc2626;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 6px;
+    transition: background .12s;
+  }
+  #clear-btn:hover { background: #ffe4e4; }
+  #clear-btn:active { transform: scale(0.97); }
+
+
+  /* ════════════════════════════════ CELEBRATION OVERLAY ════════════════════════════════ */
+  #celebration {
+    position: absolute; inset: 0; z-index: 50;
+    background: rgba(30,27,58,0.92);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 10px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+  }
+  #celebration.show { opacity: 1; pointer-events: all; }
+
+  .cel-emoji { font-size: 64px; animation: celbounce .5s ease infinite alternate; }
+  @keyframes celbounce { from{transform:translateY(0)} to{transform:translateY(-10px)} }
+
+  .cel-title {
+    font-family: var(--font-main);
+    font-size: 32px; font-weight: 900;
+    color: #fff; letter-spacing: -1px;
+  }
+  .cel-stars { display: flex; gap: 12px; }
+  .cel-star {
+    width: 36px; height: 36px;
+    background: var(--star-gold);
+    clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+    animation: celpop .35s cubic-bezier(.34,1.56,.64,1) backwards;
+  }
+  .cel-star:nth-child(2) { animation-delay:.08s; }
+  .cel-star:nth-child(3) { animation-delay:.16s; }
+  .cel-star:nth-child(4) { animation-delay:.24s; }
+  .cel-star:nth-child(5) { animation-delay:.32s; }
+  .cel-star-empty {
+    background: rgba(255,255,255,0.18) !important;
+    animation: none !important;
+  }
+  .cel-star-new {
+    animation: star-burst .5s cubic-bezier(.34,1.8,.64,1) both !important;
+  }
+  @keyframes star-burst {
+    0%   { transform: scale(0) rotate(-30deg);  opacity: 0; }
+    60%  { transform: scale(1.4) rotate(10deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg);    opacity: 1; }
+  }
+  @keyframes celpop { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+
+  .cel-sub { font-size: 15px; color: rgba(255,255,255,.6); font-weight: 700; }
+
+  .cel-next {
+    background: var(--adult-accent);
+    border: none; border-radius: var(--radius-md);
+    padding: 14px 36px;
+    font-family: var(--font-main);
+    font-size: 16px; font-weight: 900;
+    color: #fff; cursor: pointer;
+    margin-top: 10px;
+    transition: opacity .15s, transform .1s;
+  }
+  .cel-next:hover { opacity: .88; }
+  .cel-next:active { transform: scale(0.97); }
+
+  /* confetti particles */
+  .confetti-piece {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    animation: confettifall 1.2s ease-out forwards;
+    pointer-events: none;
+  }
+  @keyframes confettifall {
+    0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* ── HINT POPUP ── */
+  #hint-popup {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.85);
+    background: #1e1b3a;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius-xl);
+    padding: 20px 28px;
+    z-index: 30;
+    opacity: 0; pointer-events: none;
+    transition: opacity .2s, transform .2s;
+    text-align: center;
+    min-width: 220px;
+  }
+  #hint-popup.show { opacity: 1; transform: translate(-50%,-50%) scale(1); pointer-events: all; }
+  #hint-popup .hint-popup-icon { font-size: 32px; }
+  #hint-popup p { font-size: 18px; font-weight: 800; color: #fff; margin-top: 8px; line-height: 1.3; }
+  #hint-popup small { font-size: 11px; color: rgba(255,255,255,.4); display: block; margin-top: 6px; }
+  /* ── LEVEL-UP OVERLAY ── */
+  #levelup-overlay {
+    position: absolute; inset: 0; z-index: 60;
+    background: linear-gradient(135deg, #1a1035 0%, #2d1b6e 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 10px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .4s;
+  }
+  #levelup-overlay.show { opacity: 1; pointer-events: all; }
+
+  .lup-burst {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 45%, rgba(124,111,255,0.35) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .lup-ico {
+    font-size: 72px;
+    animation: lup-float 2s ease-in-out infinite alternate;
+    position: relative; z-index: 1;
+  }
+  @keyframes lup-float { from{transform:translateY(0) scale(1)} to{transform:translateY(-10px) scale(1.07)} }
+
+  .lup-badge {
+    background: #7c6fff;
+    color: #fff;
+    font-family: var(--font-main);
+    font-size: 12px; font-weight: 900;
+    letter-spacing: 3px;
+    padding: 4px 16px;
+    border-radius: 99px;
+    animation: celpop .4s .05s cubic-bezier(.34,1.56,.64,1) both;
+    position: relative; z-index: 1;
+  }
+
+  .lup-title {
+    font-family: var(--font-main);
+    font-size: 28px; font-weight: 900;
+    color: #fff; letter-spacing: -0.5px;
+    animation: celpop .4s .12s cubic-bezier(.34,1.56,.64,1) both;
+    position: relative; z-index: 1;
+    text-align: center;
+  }
+
+  .lup-sub {
+    font-size: 15px; font-weight: 700;
+    color: rgba(255,255,255,.6);
+    animation: celpop .4s .18s cubic-bezier(.34,1.56,.64,1) both;
+    position: relative; z-index: 1;
+    text-align: center; padding: 0 20px;
+  }
+
+  .lup-stars {
+    display: flex; gap: 10px;
+    animation: celpop .4s .22s cubic-bezier(.34,1.56,.64,1) both;
+    position: relative; z-index: 1;
+  }
+  .lup-star {
+    width: 28px; height: 28px;
+    background: var(--star-gold);
+    clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+  }
+
+  .lup-btn {
+    background: #7c6fff;
+    border: none; border-radius: var(--radius-md);
+    padding: 14px 40px;
+    font-family: var(--font-main);
+    font-size: 16px; font-weight: 900;
+    color: #fff; cursor: pointer;
+    margin-top: 8px;
+    animation: celpop .4s .3s cubic-bezier(.34,1.56,.64,1) both;
+    position: relative; z-index: 1;
+    transition: opacity .15s, transform .1s;
+  }
+  .lup-btn:hover { opacity: .88; }
+  .lup-btn:active { transform: scale(0.97); }
+
+  /* level star pips */
+  .lvl-pip {
+    width: 14px; height: 14px;
+    background: rgba(0,0,0,0.12);
+    clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+    transition: background .3s, transform .2s;
+  }
+  .lvl-pip.earned { background: var(--star-gold); transform: scale(1.15); }
+  /* ── RESTART BUTTON ── */
+  #btn-restart {
+    width: 100%;
+    height: 36px;
+    background: transparent;
+    border: 1.5px solid rgba(0,0,0,0.18);
+    border-radius: var(--radius-sm);
+    color: rgba(0,0,0,0.40);
+    font-family: var(--font-main);
+    font-size: 12px; font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: background .15s, border-color .15s, color .15s;
+    letter-spacing: .3px;
+    margin-top: 4px;
+  }
+  #btn-restart:hover {
+    background: rgba(0,0,0,0.06);
+    border-color: rgba(0,0,0,0.30);
+    color: rgba(0,0,0,0.60);
+  }
+  #btn-restart:active { transform: scale(0.97); }
+
+  /* ── CONFIRM MODAL ── */
+  #confirm-modal {
+    position: absolute; inset: 0; z-index: 70;
+    background: rgba(15,14,28,0.80);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s;
+    backdrop-filter: blur(4px);
+  }
+  #confirm-modal.show { opacity: 1; pointer-events: all; }
+
+  .confirm-box {
+    background: #fff;
+    border-radius: var(--radius-xl);
+    padding: 28px 28px 22px;
+    width: 300px;
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    animation: celpop .3s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .confirm-icon { font-size: 40px; }
+  .confirm-title {
+    font-family: var(--font-main);
+    font-size: 18px; font-weight: 900;
+    color: #1a1a2e;
+  }
+  .confirm-sub {
+    font-size: 13px; font-weight: 600;
+    color: #7a8aac; line-height: 1.5;
+  }
+  .confirm-btns { display: flex; gap: 8px; width: 100%; margin-top: 6px; }
+  .confirm-yes {
+    flex: 1; height: 44px;
+    background: var(--red); border: none;
+    border-radius: var(--radius-md);
+    color: #fff; font-family: var(--font-main);
+    font-size: 14px; font-weight: 800;
+    cursor: pointer; transition: opacity .15s;
+  }
+  .confirm-yes:hover { opacity: .88; }
+  .confirm-no {
+    flex: 1; height: 44px;
+    background: #f0f4ff; border: none;
+    border-radius: var(--radius-md);
+    color: #4a5080; font-family: var(--font-main);
+    font-size: 14px; font-weight: 800;
+    cursor: pointer; transition: background .15s;
+  }
+  .confirm-no:hover { background: #e2e8ff; }
+
+  /* ══════════════════════════════ ONBOARDING OVERLAY ══════════════════════════════ */
+  #onboarding {
+    position: absolute; inset: 0; z-index: 90;
+    background: linear-gradient(160deg, #1a1535 0%, #2e2060 100%);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 0;
+    transition: opacity .4s;
+  }
+  #onboarding.hide {
+    opacity: 0; pointer-events: none;
+  }
+
+  .ob-logo {
+    font-size: 38px;
+    margin-bottom: 6px;
+    animation: lup-float 3s ease-in-out infinite alternate;
+  }
+  .ob-title {
+    font-family: var(--font-main);
+    font-size: 22px; font-weight: 900;
+    color: #fff; letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .ob-subtitle {
+    font-size: 12px; font-weight: 600;
+    color: rgba(255,255,255,.45);
+    margin-bottom: 28px;
+    letter-spacing: .5px;
+  }
+
+  /* card stack */
+  .ob-stack {
+    position: relative;
+    width: 340px;
+    height: 290px;
+    margin-bottom: 24px;
+  }
+
+  .ob-card {
+    position: absolute; inset: 0;
+    background: #fff;
+    border-radius: 22px;
+    padding: 22px 24px 20px;
+    display: flex; flex-direction: column;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+    transition: transform .45s cubic-bezier(.34,1.2,.64,1), opacity .35s ease;
+    transform-origin: center bottom;
+    cursor: default;
+    user-select: none;
+    overflow: hidden;
+  }
+
+  /* stack peek effect: card 2 and 3 peeking behind */
+  .ob-card[data-idx="1"] { transform: translateY(10px) scale(0.96); z-index: 1; opacity: .85; }
+  .ob-card[data-idx="2"] { transform: translateY(20px) scale(0.92); z-index: 0; opacity: .60; }
+  .ob-card[data-idx="0"] { transform: translateY(0)    scale(1);    z-index: 2; opacity: 1; }
+
+  .ob-card.fly-out {
+    transform: translateY(-120%) rotate(-8deg) scale(0.9) !important;
+    opacity: 0 !important;
+    pointer-events: none;
+  }
+  .ob-card.promote-1 { transform: translateY(0) scale(1) !important;    z-index: 2; opacity: 1 !important; }
+  .ob-card.promote-2 { transform: translateY(10px) scale(0.96) !important; z-index: 1; opacity: .85 !important; }
+
+  .ob-card-num {
+    font-size: 10px; font-weight: 800;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: #a0aec0; margin-bottom: 10px;
+  }
+  .ob-card-icon { font-size: 30px; margin-bottom: 8px; }
+  .ob-card-title {
+    font-family: var(--font-main);
+    font-size: 16px; font-weight: 900;
+    color: #1a1a2e; margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .ob-card-body {
+    font-size: 12px; font-weight: 600;
+    color: #4a5568; line-height: 1.6;
+    flex: 1;
+  }
+  .ob-card-body ol {
+    padding-left: 16px; margin: 0;
+  }
+  .ob-card-body ol li { margin-bottom: 4px; }
+  .ob-card-body .quote {
+    background: #f0f4ff;
+    border-left: 3px solid #7c6fff;
+    border-radius: 0 8px 8px 0;
+    padding: 7px 10px;
+    margin-top: 8px;
+    font-style: italic;
+    font-size: 11px;
+    color: #5a6690;
+  }
+
+  .ob-btn {
+    background: #7c6fff;
+    border: none; border-radius: 14px;
+    width: 340px; height: 50px;
+    font-family: var(--font-main);
+    font-size: 15px; font-weight: 900;
+    color: #fff; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: opacity .15s, transform .1s;
+    letter-spacing: .3px;
+  }
+  .ob-btn:hover { opacity: .88; }
+  .ob-btn:active { transform: scale(0.97); }
+
+  .ob-back-btn {
+    background: transparent;
+    border: none;
+    width: 340px; height: 36px;
+    font-family: var(--font-main);
+    font-size: 13px; font-weight: 700;
+    color: rgba(255,255,255,0.35);
+    cursor: pointer;
+    letter-spacing: .3px;
+    transition: color .15s;
+    display: none; /* hidden on first card */
+  }
+  .ob-back-btn:hover { color: rgba(255,255,255,0.7); }
+  .ob-back-btn.visible { display: block; }
+
+  .ob-dots {
+    display: flex; gap: 6px;
+    margin-bottom: 16px;
+  }
+  .ob-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(255,255,255,.25);
+    transition: background .3s, transform .3s;
+  }
+  .ob-dot.active { background: #fff; transform: scale(1.3); }
+
+  /* ── HOW-TO-PLAY REVIEW BUTTON (child zone header) ── */
+  #how-to-btn {
+    background: #fff;
+    border: 1.5px solid #dce5f5;
+    border-radius: 99px;
+    padding: 5px 12px;
+    font-family: var(--font-main);
+    font-size: 11px; font-weight: 800;
+    color: #6c63ff;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 5px;
+    transition: background .15s, border-color .15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  #how-to-btn:hover { background: #f0edff; border-color: #c5beff; }
+  #how-to-btn:active { transform: scale(0.96); }
+
+  /* ── REVIEW MODAL (3 cards scrollable) ── */
+  #review-modal {
+    position: absolute; inset: 0; z-index: 80;
+    background: rgba(15,14,28,0.82);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s;
+    backdrop-filter: blur(5px);
+  }
+  #review-modal.show { opacity: 1; pointer-events: all; }
+
+  .review-box {
+    background: #1e1b3a;
+    border-radius: 24px;
+    padding: 24px 22px 20px;
+    width: 360px;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex; flex-direction: column; gap: 12px;
+    animation: celpop .3s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .review-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .review-title {
+    font-family: var(--font-main);
+    font-size: 16px; font-weight: 900; color: #fff;
+  }
+  .review-close {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,.1); border: none;
+    color: #fff; font-size: 15px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .15s;
+  }
+  .review-close:hover { background: rgba(255,255,255,.2); }
+
+  .review-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px 18px 16px;
+  }
+  .review-card .ob-card-num { margin-bottom: 6px; }
+  .review-card .ob-card-icon { font-size: 24px; margin-bottom: 6px; }
+  .review-card .ob-card-title { font-size: 14px; margin-bottom: 6px; }
+  .review-card .ob-card-body { font-size: 11.5px; }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ══════════════════════════════ ONBOARDING OVERLAY  ══════════════════════════════ -->
+  <div id="onboarding">
+    <div class="ob-logo">🎨</div>
+    <div class="ob-title">Rabiscoo</div>
+    <div class="ob-subtitle">GUIA RÁPIDO PARA OS PAIS</div>
+
+    <div class="ob-dots">
+      <div class="ob-dot active" id="dot0"></div>
+      <div class="ob-dot" id="dot1"></div>
+      <div class="ob-dot" id="dot2"></div>
+    </div>
+
+    <div class="ob-stack" id="obStack">
+
+      <!-- Card 0 — Três passos para jogar -->
+      <div class="ob-card" data-idx="0" id="obCard0">
+        <div class="ob-card-num">Cartão 1 de 3</div>
+        <div class="ob-card-icon">🃏</div>
+        <div class="ob-card-title">Três passos para jogar</div>
+        <div class="ob-card-body">
+          <ol>
+            <li><strong>Adulto lê ou imita a carta</strong> em voz alta</li>
+            <li><strong>Criança desenha</strong> o que interpreta no quadro</li>
+            <li><strong>Adulto avalia</strong> se a resposta está correta</li>
+          </ol>
+          <div class="quote">🧠 Leia o cartão e permita que a criança pense e desenhe livremente. Ex: "Fruta amarela e doce" pode virar uma banana, um macaco com a fruta ou outra associação criativa — tudo é válido!</div>
+        </div>
+      </div>
+
+      <!-- Card 1 — Aprender sem medo -->
+      <div class="ob-card" data-idx="1" id="obCard1">
+        <div class="ob-card-num">Cartão 2 de 3</div>
+        <div class="ob-card-icon">🎨</div>
+        <div class="ob-card-title">Aprender sem medo de errar</div>
+        <div class="ob-card-body">
+          Evite corrigir de forma negativa. O mais importante é desenvolver <strong>raciocínio, criatividade e confiança</strong> — não acertar perfeitamente. Aproveite os erros para ensinar com calma.
+          <div class="quote">"Gostei da sua ideia!" &nbsp;·&nbsp; "Me explica o que você desenhou?"</div>
+        </div>
+      </div>
+
+      <!-- Card 2 — Valorize o esforço -->
+      <div class="ob-card" data-idx="2" id="obCard2">
+        <div class="ob-card-num">Cartão 3 de 3</div>
+        <div class="ob-card-icon">⭐</div>
+        <div class="ob-card-title">Valorize o esforço e incentive a explicação</div>
+        <div class="ob-card-body">
+          Depois do desenho, pergunte: <em>"O que está acontecendo aqui?"</em> ou <em>"Por que você escolheu essas cores?"</em>. Isso fortalece linguagem e expressão emocional.
+          <div class="quote">Sentir-se acolhida e elogiada aumenta a confiança para continuar aprendendo. 💛</div>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="ob-btn" id="obBtn" onclick="obNext()">
+      <span id="obBtnText">Entendi, próximo →</span>
+    </button>
+    <button class="ob-back-btn" id="obBackBtn" onclick="obBack()">← Voltar</button>
+  </div>
+
+  <!-- ══════════════════════════════ ADULT ZONE  ══════════════════════════════ -->
+  <div id="adult-zone">
+
+    <div class="zone-label">Adulto</div>
+
+    <!-- Card -->
+    <div id="card">
+      <div class="card-meta" id="cardMeta">Nível 1 · Carta 1 de 10</div>
+      <div class="card-progress" id="cardProgress"></div>
+      <div id="card-text">Animal que mia</div>
+      <div class="card-stars" id="cardStars"></div>
+    </div>
+
+    <!-- Hint -->
+    <button id="hint-btn" onclick="toggleHint()">
+      <div class="hint-ico">💡</div>
+      <div>
+        <div>Dica extra</div>
+        <div id="hint-text">Toque para revelar</div>
+      </div>
+    </button>
+
+    <div class="divider"></div>
+
+    <!-- Timer -->
+    <div class="timer-section">
+      <div class="timer-row">
+        <span class="timer-label">Tempo</span>
+        <span id="timer-display">30s</span>
+      </div>
+      <div class="timer-track">
+        <div id="timer-bar" style="width:100%"></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Level -->
+    <div class="level-badge" id="levelBadge">
+      <div class="level-ico" id="levelIco">🟡</div>
+      <div class="level-info">
+        <div class="level-title" id="levelTitle">Nível 1 — Concreto</div>
+        <div style="display:flex;gap:4px;margin-top:5px;align-items:center">
+          <div id="levelStarPips" style="display:flex;gap:3px"></div>
+          <span id="levelStarCount" style="font-size:10px;font-weight:700;color:rgba(0,0,0,0.4);margin-left:2px">0/5 ⭐</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Decision buttons -->
+    <div class="decision-section">
+      <div class="dec-label">Avaliação</div>
+      <button class="btn-correct" id="btnCorrect" onclick="handleCorrect(event)">
+        <span class="btn-ico">✓</span> Acertou!
+      </button>
+      <button class="btn-retry" onclick="handleRetry()">
+        ↩ Tentar novamente
+      </button>
+    </div>
+
+    <!-- Restart button -->
+    <button id="btn-restart" onclick="confirmRestart()">
+      ↺ Reiniciar jogo
+    </button>
+
+  </div>
+
+  <!-- ══════════════════════════════ CHILD ZONE ══════════════════════════════ -->
+  <div id="child-zone">
+
+    <div class="child-header">
+      <span class="child-zone-label">Criança — Desenhe aqui!</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button id="how-to-btn" onclick="openReview()">📖 Como jogar</button>
+        <div class="child-score">
+          <div class="score-star"></div>
+          <span id="scoreDisplay">0 estrelas</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Canvas -->
+    <div id="canvas-wrap">
+      <div class="canvas-placeholder" id="placeholder">
+        <div class="ph-icon">✏️</div>
+        <p>Toque para começar a desenhar</p>
+      </div>
+      <canvas id="draw-canvas"></canvas>
+      <div id="timeup-overlay">
+        <div class="timeup-icon">&#9200;</div>
+        <div class="timeup-title">Tempo esgotado!</div>
+        <div class="timeup-sub">O adulto vai avaliar<br>o seu desenho agora</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div id="toolbar">
+      <!-- Tools -->
+      <button class="tool-btn active" id="btnPencil" title="Lápis" onclick="setTool('pencil')">✏️</button>
+      <button class="tool-btn" id="btnEraser" title="Borracha" onclick="setTool('eraser')"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="7" width="10" height="7" rx="1.5" transform="rotate(-35 2.5 7)" fill="#f87171" stroke="#dc2626" stroke-width="1.2"/><rect x="8.5" y="9.5" width="5" height="7" rx="1.5" transform="rotate(-35 8.5 9.5)" fill="#fca5a5" stroke="#dc2626" stroke-width="1.2"/><line x1="4" y1="17" x2="17" y2="17" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+
+      <div class="tool-sep"></div>
+
+      <!-- Sizes -->
+      <div class="size-btns">
+        <button class="size-btn" id="sz1" onclick="setSize(4, 'sz1')">
+          <div class="size-dot" style="width:5px;height:5px"></div>
+        </button>
+        <button class="size-btn active" id="sz2" onclick="setSize(9, 'sz2')">
+          <div class="size-dot" style="width:9px;height:9px"></div>
+        </button>
+        <button class="size-btn" id="sz3" onclick="setSize(16, 'sz3')">
+          <div class="size-dot" style="width:14px;height:14px"></div>
+        </button>
+      </div>
+
+      <div class="tool-sep"></div>
+
+      <!-- Colors -->
+      <button class="color-dot selected" style="background:#6c63ff" onclick="setColor('#6c63ff',this)" title="Roxo"></button>
+      <button class="color-dot" style="background:#ef4444" onclick="setColor('#ef4444',this)" title="Vermelho"></button>
+      <button class="color-dot" style="background:#f97316" onclick="setColor('#f97316',this)" title="Laranja"></button>
+      <button class="color-dot" style="background:#22c55e" onclick="setColor('#22c55e',this)" title="Verde"></button>
+      <button class="color-dot" style="background:#3b82f6" onclick="setColor('#3b82f6',this)" title="Azul"></button>
+      <button class="color-dot" style="background:#fbbf24" onclick="setColor('#fbbf24',this)" title="Amarelo"></button>
+      <button class="color-dot" style="background:#ec4899" onclick="setColor('#ec4899',this)" title="Rosa"></button>
+      <button class="color-dot" style="background:#1e1e1e" onclick="setColor('#1e1e1e',this)" title="Preto"></button>
+
+      <!-- Clear -->
+      <button id="clear-btn" onclick="clearCanvas()">🗑️ Apagar tudo</button>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════ OVERLAYS ══════════════════════════════ -->
+  <div id="hint-popup">
+    <div class="hint-popup-icon">📣</div>
+    <p id="hint-popup-text">Faz ronron e dorme no sol!</p>
+    <small>Dica extra</small>
+  </div>
+
+  <!-- Level-up overlay -->
+  <div id="levelup-overlay">
+    <div class="lup-burst" id="lupBurst"></div>
+    <div class="lup-ico" id="lupIco">🏆</div>
+    <div class="lup-badge" id="lupBadge">NÍVEL 2</div>
+    <div class="lup-title" id="lupTitle">Ação desbloqueada!</div>
+    <div class="lup-sub" id="lupSub">Agora você vai desenhar verbos!</div>
+    <div class="lup-stars">
+      <div class="lup-star"></div><div class="lup-star"></div><div class="lup-star"></div>
+      <div class="lup-star"></div><div class="lup-star"></div>
+    </div>
+    <button class="lup-btn" onclick="startLevel()">Vamos lá! &#8594;</button>
+  </div>
+
+  <div id="celebration">
+    <div class="cel-emoji">🎉</div>
+    <div class="cel-title">Mandou bem!</div>
+    <div class="cel-stars" id="celStars"></div>
+    <div class="cel-sub" id="cel-sub">Continue assim!</div>
+    <button class="cel-next" onclick="nextCard()">Próxima carta &#8594;</button>
+  </div>
+  <!-- Review modal -->
+  <div id="review-modal">
+    <div class="review-box">
+      <div class="review-header">
+        <div class="review-title">📖 Como jogar</div>
+        <button class="review-close" onclick="closeReview()">✕</button>
+      </div>
+      <div class="review-card">
+        <div class="ob-card-num">Cartão 1 de 3</div>
+        <div class="ob-card-icon">🃏</div>
+        <div class="ob-card-title">Três passos para jogar</div>
+        <div class="ob-card-body">
+          <ol>
+            <li><strong>Adulto lê a carta</strong> em voz alta (ou imita!)</li>
+            <li><strong>Criança desenha</strong> o que interpreta no quadro</li>
+            <li><strong>Adulto avalia</strong> se a resposta está correta</li>
+          </ol>
+          <div class="quote">🧠 Permita que a criança pense livremente. A banana, o macaco ou outra associação — tudo é válido!</div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="ob-card-num">Cartão 2 de 3</div>
+        <div class="ob-card-icon">🎨</div>
+        <div class="ob-card-title">Aprender sem medo de errar</div>
+        <div class="ob-card-body">
+          Evite corrigir de forma negativa. O mais importante é desenvolver <strong>raciocínio, criatividade e confiança</strong> — não acertar perfeitamente.
+          <div class="quote">"Gostei da sua ideia!" &nbsp;·&nbsp; "Me explica o que você desenhou?"</div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="ob-card-num">Cartão 3 de 3</div>
+        <div class="ob-card-icon">⭐</div>
+        <div class="ob-card-title">Valorize o esforço e incentive a explicação</div>
+        <div class="ob-card-body">
+          Depois do desenho, pergunte: <em>"O que está acontecendo aqui?"</em> ou <em>"Por que você escolheu essas cores?"</em>. Isso fortalece linguagem e expressão emocional.
+          <div class="quote">Sentir-se acolhida e elogiada aumenta a confiança para continuar aprendendo. 💛</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Restart confirm modal -->
+  <div id="confirm-modal">
+    <div class="confirm-box">
+      <div class="confirm-icon">🔄</div>
+      <div class="confirm-title">Reiniciar o jogo?</div>
+      <div class="confirm-sub">Todo o progresso será perdido e você voltará ao Nível 1 com 0 estrelas.</div>
+      <div class="confirm-btns">
+        <button class="confirm-yes" onclick="doRestart()">Sim, reiniciar</button>
+        <button class="confirm-no" onclick="closeConfirm()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   LEVEL DEFINITIONS
+   Nível 1 — Concreto (60s) | Nível 2 — Ação (45s) | Nível 3 — Abstrato (30s)
+   Desbloqueio: 5 estrelas acumuladas no nível
+══════════════════════════════════════════════ */
+const LEVELS = [
+  {
+    id: 1,
+    name: 'Concreto',
+    desc: 'Associação direta de objetos e animais',
+    emoji: '🟡',
+    color: '#f59e0b',
+    time: 60,
+    starsNeeded: 5,
+    cards: [
+      { text: 'Animal que mia',           hint: 'Faz ronron e dorme no sol!',        stars: 1 },
+      { text: 'Fruta amarela e doce',     hint: 'Macaco adora comer!',               stars: 1 },
+      { text: 'Cai do céu quando chove',  hint: 'Abre o guarda-chuva!',              stars: 1 },
+      { text: 'Veículo com duas rodas',   hint: 'Você pedala para andar!',           stars: 1 },
+      { text: 'Animal que late',          hint: 'Melhor amigo do ser humano!',       stars: 1 },
+      { text: 'Objeto para dormir',       hint: 'Fica no quarto, bem macio!',        stars: 1 },
+      { text: 'Brilha no céu à noite',    hint: 'Aparecem milhares deles!',          stars: 1 },
+      { text: 'Animal que nada',          hint: 'Vive no oceano ou no aquário!',     stars: 1 },
+      { text: 'Serve para escrever',      hint: 'Segura com a mão e risca no papel!',stars: 1 },
+      { text: 'Fruta vermelha pequena',   hint: 'Fica no topo do bolo!',             stars: 1 },
+    ]
+  },
+  {
+    id: 2,
+    name: 'Ação',
+    desc: 'Verbos e movimentos para desenhar',
+    emoji: '🟠',
+    color: '#f97316',
+    time: 45,
+    starsNeeded: 5,
+    cards: [
+      { text: 'Correr',    hint: 'Mais rápido que andar, pernas para o ar!',  stars: 1 },
+      { text: 'Dormir',    hint: 'Fecha os olhos e sonha!',                   stars: 1 },
+      { text: 'Pular',     hint: 'Sai do chão e volta!',                      stars: 1 },
+      { text: 'Nadar',     hint: 'Move os braços dentro da água!',            stars: 1 },
+      { text: 'Comer',     hint: 'Abre a boca e mastiga!',                    stars: 1 },
+      { text: 'Chorar',    hint: 'Lágrimas caem pelo rosto!',                 stars: 1 },
+      { text: 'Voar',      hint: 'Pássaros e aviões fazem isso!',             stars: 1 },
+      { text: 'Abraçar',   hint: 'Coloca os braços em volta de alguém!',      stars: 1 },
+      { text: 'Cair',      hint: 'Perdeu o equilíbrio e foi ao chão!',        stars: 1 },
+      { text: 'Empurrar',  hint: 'Usa a força para mover algo para longe!',   stars: 1 },
+    ]
+  },
+  {
+    id: 3,
+    name: 'Abstrato',
+    desc: 'Sentimentos e emoções para interpretar',
+    emoji: '🔴',
+    color: '#ef4444',
+    time: 30,
+    starsNeeded: 5,
+    cards: [
+      { text: 'Quando você ganha um presente! Como se sente?',              hint: 'Você sorri quando fica...?',      stars: 1 },
+      { text: 'Quando algo ruim acontece... Como se sente?',                hint: 'Você chora quando está...?',      stars: 1 },
+      { text: 'Quando alguém faz algo injusto! Como se sente?',             hint: 'Fumaça sai dos seus ouvidos!!',   stars: 1 },
+      { text: 'Quando você vê algo assustador! Como se sente?',             hint: 'Você pode começar a tremer!',     stars: 1 },
+      { text: 'Algo totalmente inesperado aconteceu! Como se sente?',       hint: 'Você fecha os olhos!!',                   stars: 1 },
+      { text: 'Os olhos pesam e você boceja! Como se sente?',               hint: 'Você começa a coçar os olhos',            stars: 1 },
+      { text: 'Energia total, mal consegue parar quieto! Como se sente?',   hint: 'Você fica feliz e quer pular e pular...', stars: 1 },
+      { text: 'O corpo treme e a pele arrepia! Como se sente?',             hint: 'Procuras um lugar quentinho...',          stars: 1 },
+      { text: 'Você fez algo muito bem feito!',                             hint: 'Resposta: Orgulhoso',                     stars: 1 },
+      { text: 'Nada parece interessante...',                                hint: 'Resposta: Entediado',                     stars: 1 },
+    ]
+  }
+];
+
+/* ── STATE ── */
+let currentLevelIdx = 0;
+let deck = [];
+let missed = [];
+let currentCard = null;
+let levelStars = 0;   // stars earned in current level (0–5)
+let levelCorrect = 0; // correct answers in current level (0–15)
+let answeredCount = 0; // unique cards correctly answered this level
+let totalStars = 0;
+let timerVal = 60;
+let timerDuration = 60;
+let timerInterval = null;
+let currentTool = 'pencil';
+let currentColor = '#6c63ff';
+let currentSize = 9;
+let isDrawing = false;
+let hintOpen = false;
+let canvasLocked = false;
+
+/* ── CANVAS SETUP ── */
+const wrap = document.getElementById('canvas-wrap');
+const canvas = document.getElementById('draw-canvas');
+const placeholder = document.getElementById('placeholder');
+let ctx;
+
+function initCanvas() {
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  ctx = canvas.getContext('2d');
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+}
+window.addEventListener('resize', () => { initCanvas(); });
+setTimeout(initCanvas, 80);
+
+function lockCanvas() {
+  canvasLocked = true;
+  isDrawing = false;
+  wrap.classList.remove('active');
+  wrap.classList.add('locked');
+  document.getElementById('timeup-overlay').classList.add('show');
+  document.getElementById('toolbar').classList.add('locked');
+  document.getElementById('adult-zone').classList.add('awaiting');
+}
+function unlockCanvas() {
+  canvasLocked = false;
+  wrap.classList.remove('locked');
+  document.getElementById('timeup-overlay').classList.remove('show');
+  document.getElementById('toolbar').classList.remove('locked');
+  document.getElementById('adult-zone').classList.remove('awaiting');
+}
+
+function getPos(e) {
+  const r = canvas.getBoundingClientRect();
+  const src = e.touches ? e.touches[0] : e;
+  return [
+    (src.clientX - r.left) * (canvas.width / r.width),
+    (src.clientY - r.top) * (canvas.height / r.height)
+  ];
+}
+
+canvas.addEventListener('mousedown', e => {
+  if (canvasLocked) return;
+  isDrawing = true;
+  placeholder.style.opacity = '0';
+  wrap.classList.add('active');
+  ctx.beginPath();
+  const [x,y] = getPos(e); ctx.moveTo(x,y);
+});
+canvas.addEventListener('mousemove', e => {
+  if (!isDrawing || canvasLocked) return;
+  applyStroke(getPos(e));
+});
+canvas.addEventListener('mouseup', () => { isDrawing = false; });
+canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+canvas.addEventListener('touchstart', e => {
+  if (canvasLocked) { e.preventDefault(); return; }
+  e.preventDefault(); isDrawing = true;
+  placeholder.style.opacity = '0';
+  wrap.classList.add('active');
+  ctx.beginPath();
+  const [x,y] = getPos(e); ctx.moveTo(x,y);
+}, {passive:false});
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (!isDrawing || canvasLocked) return;
+  applyStroke(getPos(e));
+}, {passive:false});
+canvas.addEventListener('touchend', () => { isDrawing = false; });
+
+function applyStroke([x,y]) {
+  if (currentTool === 'eraser') {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.lineWidth = currentSize * 4;
+    ctx.strokeStyle = 'rgba(0,0,0,1)';
+  } else {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.lineWidth = currentSize;
+    ctx.strokeStyle = currentColor;
+  }
+  ctx.lineTo(x,y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x,y);
+}
+
+function clearCanvas() {
+  if (!ctx) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  placeholder.style.opacity = '1';
+  wrap.classList.remove('active');
+  unlockCanvas();
+}
+
+/* ── TOOLS ── */
+function setTool(t) {
+  currentTool = t;
+  document.getElementById('btnPencil').classList.toggle('active', t==='pencil');
+  document.getElementById('btnEraser').classList.toggle('active', t==='eraser');
+}
+function setColor(c, el) {
+  currentColor = c; setTool('pencil');
+  document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function setSize(s, id) {
+  currentSize = s;
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  setTool('pencil');
+}
+
+/* ── TIMER ── */
+function startTimer() {
+  clearInterval(timerInterval);
+  timerDuration = LEVELS[currentLevelIdx].time;
+  timerVal = timerDuration;
+  unlockCanvas();
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timerVal--;
+    if (timerVal <= 0) {
+      timerVal = 0;
+      clearInterval(timerInterval);
+      updateTimerUI();
+      lockCanvas();
+      return;
+    }
+    updateTimerUI();
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const disp = document.getElementById('timer-display');
+  const bar = document.getElementById('timer-bar');
+  const pct = (timerVal / timerDuration) * 100;
+  disp.textContent = timerVal + 's';
+  bar.style.width = pct + '%';
+  disp.className = '';
+  bar.style.background = '#7c4f00';
+  if (timerVal <= 10) { disp.classList.add('warn'); bar.style.background = '#c0390a'; }
+  if (timerVal <= 5)  { disp.classList.add('danger'); bar.style.background = '#b91c1c'; }
+}
+
+/* ── LEVEL UI ── */
+function updateLevelUI() {
+  const lvl = LEVELS[currentLevelIdx];
+  document.getElementById('levelIco').textContent = lvl.emoji;
+  document.getElementById('levelTitle').textContent = `Nível ${lvl.id} — ${lvl.name}`;
+  document.getElementById('levelStarCount').textContent = `${levelStars}/${lvl.starsNeeded} ⭐`;
+
+  // star pips
+  const pips = document.getElementById('levelStarPips');
+  pips.innerHTML = '';
+  for (let i = 0; i < lvl.starsNeeded; i++) {
+    const p = document.createElement('div');
+    p.className = 'lvl-pip' + (i < levelStars ? ' earned' : '');
+    pips.appendChild(p);
+  }
+}
+
+/* ── CARDS ── */
+function buildCardUI(card) {
+  const lvl = LEVELS[currentLevelIdx];
+  document.getElementById('card-text').textContent = card.text;
+  const total = lvl.cards.length;
+  const done  = total - deck.length - missed.length - 1;
+  document.getElementById('cardMeta').textContent =
+    `Nível ${lvl.id} · Carta ${Math.max(done+1,1)} de ${total}`;
+
+  const prog = document.getElementById('cardProgress');
+  prog.innerHTML = '';
+  lvl.cards.forEach(c => {
+    const pip = document.createElement('div');
+    pip.className = 'card-pip';
+    if (c === card) pip.classList.add('current');
+    else if (!deck.includes(c) && !missed.includes(c) && c !== card) pip.classList.add('done');
+    prog.appendChild(pip);
+  });
+
+  // no per-card stars in this system — just show level difficulty
+  const starsEl = document.getElementById('cardStars');
+  starsEl.innerHTML = '';
+  const diff = ['Fácil','Médio','Difícil'][currentLevelIdx];
+  const diffEl = document.createElement('span');
+  diffEl.style.cssText = 'font-size:10px;font-weight:700;color:rgba(0,0,0,0.35);letter-spacing:.5px;';
+  diffEl.textContent = diff;
+  starsEl.appendChild(diffEl);
+}
+
+function loadNextCard() {
+  // If main deck is empty, pull only from missed (retry cards)
+  // Never re-add correctly answered cards
+  if (deck.length === 0) {
+    if (missed.length === 0) {
+      // All cards answered correctly — should not reach here (level-up fires first)
+      // Safety: nothing to show
+      return;
+    }
+    deck = shuffle([...missed]);
+    missed = [];
+  }
+  currentCard = deck.shift();
+  buildCardUI(currentCard);
+  clearCanvas();
+  startTimer();
+  closeHint();
+}
+
+/* ── HINT ── */
+function toggleHint() {
+  if (!currentCard) return;
+  hintOpen = !hintOpen;
+  const popup = document.getElementById('hint-popup');
+  popup.classList.toggle('show', hintOpen);
+  document.getElementById('hint-text').textContent = hintOpen ? 'Dica revelada' : 'Toque para revelar';
+  if (hintOpen) {
+    document.getElementById('hint-popup-text').textContent = currentCard.hint;
+    setTimeout(closeHint, 4000);
+  }
+}
+function closeHint() {
+  hintOpen = false;
+  document.getElementById('hint-popup').classList.remove('show');
+  document.getElementById('hint-text').textContent = 'Toque para revelar';
+}
+
+/* ── DECISION ── */
+// Stars are earned every 3 correct answers (3→★1, 6→★2, 9→★3, 12→★4, 15→★5)
+const STARS_TOTAL   = 5;
+const ANSWERS_TOTAL = 15; // questions per level to reach 5 stars
+const STEP = ANSWERS_TOTAL / STARS_TOTAL; // = 3
+
+function handleCorrect(e) {
+  clearInterval(timerInterval);
+
+  // ripple
+  const btn = document.getElementById('btnCorrect');
+  const rect = btn.getBoundingClientRect();
+  const rip = document.createElement('span');
+  rip.className = 'ripple';
+  rip.style.cssText = `width:${rect.width}px;height:${rect.width}px;left:0;top:${-(rect.width/2 - rect.height/2)}px`;
+  btn.appendChild(rip);
+  setTimeout(() => rip.remove(), 600);
+
+  levelCorrect++;    // total correct answers (including retries of same card)
+  answeredCount++;   // unique correct answers — drives level-up at 15
+
+  totalStars = Math.min(Math.floor(levelCorrect / STEP), STARS_TOTAL);
+  levelStars = totalStars;
+
+  document.getElementById('scoreDisplay').textContent = totalStars + (totalStars === 1 ? ' estrela' : ' estrelas');
+  updateLevelUI();
+  renderCelebrationStars();
+  spawnConfetti();
+  document.getElementById('celebration').classList.add('show');
+}
+
+function renderCelebrationStars() {
+  const container = document.getElementById('celStars');
+  container.innerHTML = '';
+
+  // How many full stars to show now
+  const filledNow = Math.min(Math.floor(levelCorrect / STEP), STARS_TOTAL);
+  // Was a new star just earned on this answer?
+  const newStarEarned = levelCorrect % STEP === 0 && filledNow > 0;
+
+  for (let i = 0; i < STARS_TOTAL; i++) {
+    const s = document.createElement('div');
+    const isFilled = i < filledNow;
+    const isNew    = isFilled && i === filledNow - 1 && newStarEarned;
+    s.className = 'cel-star' + (isFilled ? '' : ' cel-star-empty');
+    if (isNew) s.classList.add('cel-star-new');
+    container.appendChild(s);
+  }
+
+  // subtitle
+  const sub = document.getElementById('cel-sub');
+  if (newStarEarned) {
+    sub.textContent = '⭐ Nova estrela conquistada!';
+  } else {
+    const remaining = (Math.ceil(levelCorrect / STEP) * STEP) - levelCorrect;
+    sub.textContent = `Mais ${remaining} acerto${remaining > 1 ? 's' : ''} para a próxima estrela!`;
+    if (filledNow === STARS_TOTAL) sub.textContent = '🏆 5 estrelas! Incrível!';
+  }
+}
+
+function handleRetry() {
+  clearInterval(timerInterval);
+  unlockCanvas();
+  if (currentCard) missed.push(currentCard);
+  clearCanvas();
+  setTimeout(loadNextCard, 300);
+}
+
+function nextCard() {
+  document.getElementById('celebration').classList.remove('show');
+  if (answeredCount >= ANSWERS_TOTAL) {
+    if (currentLevelIdx < LEVELS.length - 1) {
+      setTimeout(showLevelUp, 200);
+    } else {
+      setTimeout(showFinalVictory, 200);
+    }
+  } else {
+    setTimeout(loadNextCard, 200);
+  }
+}
+
+/* ── LEVEL UP ── */
+function showLevelUp() {
+  const nextLvl = LEVELS[currentLevelIdx + 1];
+  document.getElementById('lupIco').textContent = nextLvl.emoji;
+  document.getElementById('lupBadge').textContent = `NÍVEL ${nextLvl.id}`;
+  document.getElementById('lupTitle').textContent = `${nextLvl.name} desbloqueada!`;
+  document.getElementById('lupSub').textContent = nextLvl.desc;
+  spawnConfettiIn('levelup-overlay');
+  document.getElementById('levelup-overlay').classList.add('show');
+}
+
+function startLevel() {
+  document.getElementById('levelup-overlay').classList.remove('show');
+  currentLevelIdx++;
+  levelStars = 0;
+  levelCorrect = 0;
+  answeredCount = 0;
+  totalStars = 0;
+  document.getElementById('scoreDisplay').textContent = '0 estrelas';
+  const lvl = LEVELS[currentLevelIdx];
+  deck = shuffle([...lvl.cards]);
+  missed = [];
+  updateLevelUI();
+  setTimeout(loadNextCard, 200);
+}
+
+function showFinalVictory() {
+  document.getElementById('lupIco').textContent = '🏅';
+  document.getElementById('lupBadge').textContent = 'PARABÉNS!';
+  document.getElementById('lupTitle').textContent = 'Você completou tudo!';
+  document.getElementById('lupSub').textContent = 'Você passou pelos 3 níveis. Incrível!';
+  document.querySelector('.lup-btn').textContent = 'Jogar novamente';
+  document.querySelector('.lup-btn').onclick = resetGame;
+  spawnConfettiIn('levelup-overlay');
+  document.getElementById('levelup-overlay').classList.add('show');
+}
+
+function resetGame() {
+  document.getElementById('levelup-overlay').classList.remove('show');
+  document.querySelector('.lup-btn').textContent = 'Vamos lá! →';
+  document.querySelector('.lup-btn').onclick = startLevel;
+  currentLevelIdx = 0;
+  levelStars = 0;
+  levelCorrect = 0;
+  answeredCount = 0;
+  totalStars = 0;
+  document.getElementById('scoreDisplay').textContent = '0 estrelas';
+  initCurrentLevel();
+}
+
+/* ── CONFETTI ── */
+const confettiColors = ['#6c63ff','#fbbf24','#22c55e','#ef4444','#3b82f6','#ec4899','#f97316'];
+function spawnConfetti() { spawnConfettiIn('celebration'); }
+function spawnConfettiIn(id) {
+  const cel = document.getElementById(id);
+  for (let i = 0; i < 32; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.cssText = `
+      left:${Math.random()*100}%;top:0;
+      background:${confettiColors[Math.floor(Math.random()*confettiColors.length)]};
+      animation-delay:${Math.random()*0.6}s;
+      animation-duration:${0.9+Math.random()*0.7}s;
+      width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+    `;
+    cel.appendChild(c);
+    setTimeout(() => c.remove(), 2000);
+  }
+}
+
+/* ── UTILS ── */
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/* ── INIT ── */
+function initCurrentLevel() {
+  const lvl = LEVELS[currentLevelIdx];
+  deck = shuffle([...lvl.cards]);
+  missed = [];
+  levelCorrect = 0;
+  answeredCount = 0;
+  levelStars = 0;
+  updateLevelUI();
+  loadNextCard();
+}
+
+initCurrentLevel();
+
+/* ── ONBOARDING ── */
+let obCurrent = 0;
+
+function updateObUI(prevIdx) {
+  const total = 3;
+  const goingForward = obCurrent > prevIdx;
+
+  // Reset all cards to their stack positions relative to obCurrent
+  for (let i = 0; i < total; i++) {
+    const el = document.getElementById('obCard' + i);
+    el.classList.remove('fly-out', 'promote-1', 'promote-2');
+    const rel = i - obCurrent;
+    if (rel < 0) {
+      // already passed — keep flown out
+      el.style.transform = 'translateY(-130%) rotate(-8deg) scale(0.9)';
+      el.style.opacity = '0';
+      el.style.zIndex = '0';
+      el.style.pointerEvents = 'none';
+    } else if (rel === 0) {
+      el.style.transform = 'translateY(0) scale(1)';
+      el.style.opacity = '1';
+      el.style.zIndex = '2';
+      el.style.pointerEvents = '';
+    } else if (rel === 1) {
+      el.style.transform = 'translateY(10px) scale(0.96)';
+      el.style.opacity = '0.85';
+      el.style.zIndex = '1';
+      el.style.pointerEvents = 'none';
+    } else {
+      el.style.transform = 'translateY(20px) scale(0.92)';
+      el.style.opacity = '0.60';
+      el.style.zIndex = '0';
+      el.style.pointerEvents = 'none';
+    }
+  }
+
+  // dots
+  for (let i = 0; i < total; i++) {
+    document.getElementById('dot' + i).classList.toggle('active', i === obCurrent);
+  }
+
+  // back button visibility
+  const backBtn = document.getElementById('obBackBtn');
+  backBtn.classList.toggle('visible', obCurrent > 0);
+
+  // forward button text
+  const btnText = document.getElementById('obBtnText');
+  if (obCurrent === total - 1) {
+    btnText.textContent = 'Vamos jogar! \uD83C\uDFA8';
+  } else {
+    btnText.textContent = 'Entendi, pr\u00f3ximo \u2192';
+  }
+}
+
+function obNext() {
+  const total = 3;
+  if (obCurrent >= total - 1) {
+    // last card — dismiss onboarding
+    setTimeout(() => {
+      document.getElementById('onboarding').classList.add('hide');
+      setTimeout(() => { document.getElementById('onboarding').style.display = 'none'; }, 450);
+    }, 150);
+    return;
+  }
+  const prev = obCurrent;
+  obCurrent++;
+  updateObUI(prev);
+}
+
+function obBack() {
+  if (obCurrent <= 0) return;
+  const prev = obCurrent;
+  obCurrent--;
+  updateObUI(prev);
+}
+
+/* ── REVIEW ── */
+function openReview() {
+  document.getElementById('review-modal').classList.add('show');
+}
+function closeReview() {
+  document.getElementById('review-modal').classList.remove('show');
+}
+
+/* ── RESTART CONFIRM ── */
+function confirmRestart() {
+  document.getElementById('confirm-modal').classList.add('show');
+}
+function closeConfirm() {
+  document.getElementById('confirm-modal').classList.remove('show');
+}
+function doRestart() {
+  closeConfirm();
+  document.getElementById('celebration').classList.remove('show');
+  document.getElementById('levelup-overlay').classList.remove('show');
+  document.querySelector('.lup-btn').textContent = 'Vamos l\u00e1! \u2192';
+  document.querySelector('.lup-btn').onclick = startLevel;
+  resetGame();
+}
+</script>
+</body>
+</html>

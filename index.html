@@ -51,7 +51,9 @@
     position: relative;
   }
 
-  /* ════════════════════════════════ ADULT ZONE  (left column) ════════════════════════════════ */
+  /* ════════════════════════════════
+     ADULT ZONE  (left column)
+  ════════════════════════════════ */
   #adult-zone {
     width: 260px;
     flex-shrink: 0;
@@ -272,7 +274,9 @@
   @keyframes rip { to { transform: scale(4); opacity: 0; } }
 
 
-  /* ════════════════════════════════ CHILD ZONE  (right main area) ════════════════════════════════ */
+  /* ════════════════════════════════
+     CHILD ZONE  (right main area)
+  ════════════════════════════════ */
   #child-zone {
     flex: 1;
     background: var(--child-bg);
@@ -497,7 +501,9 @@
   #clear-btn:active { transform: scale(0.97); }
 
 
-  /* ════════════════════════════════ CELEBRATION OVERLAY ════════════════════════════════ */
+  /* ════════════════════════════════
+     CELEBRATION OVERLAY
+  ════════════════════════════════ */
   #celebration {
     position: absolute; inset: 0; z-index: 50;
     background: rgba(30,27,58,0.92);
@@ -536,9 +542,9 @@
     animation: star-burst .5s cubic-bezier(.34,1.8,.64,1) both !important;
   }
   @keyframes star-burst {
-    0%   { transform: scale(0) rotate(-30deg);  opacity: 0; }
+    0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
     60%  { transform: scale(1.4) rotate(10deg); opacity: 1; }
-    100% { transform: scale(1) rotate(0deg);    opacity: 1; }
+    100% { transform: scale(1) rotate(0deg);   opacity: 1; }
   }
   @keyframes celpop { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
 
@@ -749,8 +755,9 @@
     cursor: pointer; transition: background .15s;
   }
   .confirm-no:hover { background: #e2e8ff; }
-
-  /* ══════════════════════════════ ONBOARDING OVERLAY ══════════════════════════════ */
+  /* ══════════════════════════════
+     ONBOARDING OVERLAY
+  ══════════════════════════════ */
   #onboarding {
     position: absolute; inset: 0; z-index: 90;
     background: linear-gradient(160deg, #1a1535 0%, #2e2060 100%);
@@ -806,7 +813,7 @@
   /* stack peek effect: card 2 and 3 peeking behind */
   .ob-card[data-idx="1"] { transform: translateY(10px) scale(0.96); z-index: 1; opacity: .85; }
   .ob-card[data-idx="2"] { transform: translateY(20px) scale(0.92); z-index: 0; opacity: .60; }
-  .ob-card[data-idx="0"] { transform: translateY(0)    scale(1);    z-index: 2; opacity: 1; }
+  .ob-card[data-idx="0"] { transform: translateY(0)   scale(1);    z-index: 2; opacity: 1; }
 
   .ob-card.fly-out {
     transform: translateY(-120%) rotate(-8deg) scale(0.9) !important;
@@ -959,10 +966,12 @@
 
 <div id="app">
 
-  <!-- ══════════════════════════════ ONBOARDING OVERLAY  ══════════════════════════════ -->
+  <!-- ══════════════════════════════
+       ONBOARDING OVERLAY
+  ══════════════════════════════ -->
   <div id="onboarding">
     <div class="ob-logo">🎨</div>
-    <div class="ob-title">Rabiscoo</div>
+    <div class="ob-title">Desenha Comigo</div>
     <div class="ob-subtitle">GUIA RÁPIDO PARA OS PAIS</div>
 
     <div class="ob-dots">
@@ -980,7 +989,7 @@
         <div class="ob-card-title">Três passos para jogar</div>
         <div class="ob-card-body">
           <ol>
-            <li><strong>Adulto lê ou imita a carta</strong> em voz alta</li>
+            <li><strong>Adulto lê a carta</strong> em voz alta (ou imita!)</li>
             <li><strong>Criança desenha</strong> o que interpreta no quadro</li>
             <li><strong>Adulto avalia</strong> se a resposta está correta</li>
           </ol>
@@ -1018,7 +1027,9 @@
     <button class="ob-back-btn" id="obBackBtn" onclick="obBack()">← Voltar</button>
   </div>
 
-  <!-- ══════════════════════════════ ADULT ZONE  ══════════════════════════════ -->
+  <!-- ══════════════════════════════
+       ADULT ZONE
+  ══════════════════════════════ -->
   <div id="adult-zone">
 
     <div class="zone-label">Adulto</div>
@@ -1085,7 +1096,9 @@
 
   </div>
 
-  <!-- ══════════════════════════════ CHILD ZONE ══════════════════════════════ -->
+  <!-- ══════════════════════════════
+       CHILD ZONE
+  ══════════════════════════════ -->
   <div id="child-zone">
 
     <div class="child-header">
@@ -1152,7 +1165,9 @@
 
   </div>
 
-  <!-- ══════════════════════════════ OVERLAYS ══════════════════════════════ -->
+  <!-- ══════════════════════════════
+       OVERLAYS
+  ══════════════════════════════ -->
   <div id="hint-popup">
     <div class="hint-popup-icon">📣</div>
     <p id="hint-popup-text">Faz ronron e dorme no sol!</p>
@@ -1237,10 +1252,11 @@
 </div>
 
 <script>
-/* ══════════════════════════════════════════════ LEVEL DEFINITIONS ══════════════════════════════════════════════ */
-  <!-- Nível 1 — Concreto (60s) | Nível 2 — Ação (45s) | Nível 3 — Abstrato (30s) -->
-  <!-- Desbloqueio: 5 estrelas acumuladas no nível -->
-
+/* ══════════════════════════════════════════════
+   LEVEL DEFINITIONS
+   Nível 1 — Concreto (60s) | Nível 2 — Ação (45s) | Nível 3 — Abstrato (30s)
+   Desbloqueio: 5 estrelas acumuladas no nível
+══════════════════════════════════════════════ */
 const LEVELS = [
   {
     id: 1,
@@ -1251,16 +1267,11 @@ const LEVELS = [
     time: 60,
     starsNeeded: 5,
     cards: [
-      { text: 'Animal que mia',           hint: 'Faz ronron e dorme no sol!',        stars: 1 },
+      { text: 'Animal que mia',          hint: 'Faz ronron e dorme no sol!',        stars: 1 },
       { text: 'Fruta amarela e doce',     hint: 'Macaco adora comer!',               stars: 1 },
       { text: 'Cai do céu quando chove',  hint: 'Abre o guarda-chuva!',              stars: 1 },
       { text: 'Veículo com duas rodas',   hint: 'Você pedala para andar!',           stars: 1 },
       { text: 'Animal que late',          hint: 'Melhor amigo do ser humano!',       stars: 1 },
-      { text: 'Objeto para dormir',       hint: 'Fica no quarto, bem macio!',        stars: 1 },
-      { text: 'Brilha no céu à noite',    hint: 'Aparecem milhares deles!',          stars: 1 },
-      { text: 'Animal que nada',          hint: 'Vive no oceano ou no aquário!',     stars: 1 },
-      { text: 'Serve para escrever',      hint: 'Segura com a mão e risca no papel!',stars: 1 },
-      { text: 'Fruta vermelha pequena',   hint: 'Fica no topo do bolo!',             stars: 1 },
     ]
   },
   {
@@ -1272,16 +1283,11 @@ const LEVELS = [
     time: 45,
     starsNeeded: 5,
     cards: [
-      { text: 'Correr',    hint: 'Mais rápido que andar, pernas para o ar!',  stars: 1 },
+      { text: 'Correr',    hint: 'Mais rápido que andar, pernas para o ar!', stars: 1 },
       { text: 'Dormir',    hint: 'Fecha os olhos e sonha!',                   stars: 1 },
       { text: 'Pular',     hint: 'Sai do chão e volta!',                      stars: 1 },
       { text: 'Nadar',     hint: 'Move os braços dentro da água!',            stars: 1 },
-      { text: 'Comer',     hint: 'Abre a boca e mastiga!',                    stars: 1 },
-      { text: 'Chorar',    hint: 'Lágrimas caem pelo rosto!',                 stars: 1 },
       { text: 'Voar',      hint: 'Pássaros e aviões fazem isso!',             stars: 1 },
-      { text: 'Abraçar',   hint: 'Coloca os braços em volta de alguém!',      stars: 1 },
-      { text: 'Cair',      hint: 'Perdeu o equilíbrio e foi ao chão!',        stars: 1 },
-      { text: 'Empurrar',  hint: 'Usa a força para mover algo para longe!',   stars: 1 },
     ]
   },
   {
@@ -1293,16 +1299,11 @@ const LEVELS = [
     time: 30,
     starsNeeded: 5,
     cards: [
-      { text: 'Quando você ganha um presente! Como se sente?',              hint: 'Você sorri quando fica...?',      stars: 1 },
-      { text: 'Quando algo ruim acontece... Como se sente?',                hint: 'Você chora quando está...?',      stars: 1 },
-      { text: 'Quando alguém faz algo injusto! Como se sente?',             hint: 'Fumaça sai dos seus ouvidos!!',   stars: 1 },
-      { text: 'Quando você vê algo assustador! Como se sente?',             hint: 'Você pode começar a tremer!',     stars: 1 },
-      { text: 'Algo totalmente inesperado aconteceu! Como se sente?',       hint: 'Você fecha os olhos!!',                   stars: 1 },
-      { text: 'Os olhos pesam e você boceja! Como se sente?',               hint: 'Você começa a coçar os olhos',            stars: 1 },
-      { text: 'Energia total, mal consegue parar quieto! Como se sente?',   hint: 'Você fica feliz e quer pular e pular...', stars: 1 },
-      { text: 'O corpo treme e a pele arrepia! Como se sente?',             hint: 'Procuras um lugar quentinho...',          stars: 1 },
-      { text: 'Você fez algo muito bem feito!',                             hint: 'Resposta: Orgulhoso',                     stars: 1 },
-      { text: 'Nada parece interessante...',                                hint: 'Resposta: Entediado',                     stars: 1 },
+      { text: 'Feliz',     hint: 'Quando você ganha um presente!',            stars: 1 },
+      { text: 'Triste',    hint: 'Quando algo ruim acontece...',              stars: 1 },
+      { text: 'Com raiva', hint: 'Quando alguém faz algo injusto!',           stars: 1 },
+      { text: 'Com medo',  hint: 'Quando você vê algo assustador!',           stars: 1 },
+      { text: 'Surpreso',  hint: 'Algo totalmente inesperado aconteceu!',     stars: 1 },
     ]
   }
 ];
@@ -1553,10 +1554,10 @@ function closeHint() {
 }
 
 /* ── DECISION ── */
-// Stars are earned every 3 correct answers (3→★1, 6→★2, 9→★3, 12→★4, 15→★5)
+// 5 cards per level — each correct answer = 1 star → 5 stars = level up
 const STARS_TOTAL   = 5;
-const ANSWERS_TOTAL = 15; // questions per level to reach 5 stars
-const STEP = ANSWERS_TOTAL / STARS_TOTAL; // = 3
+const ANSWERS_TOTAL = 5; // 5 correct answers to complete a level
+const STEP = 1;          // 1 star per correct answer
 
 function handleCorrect(e) {
   clearInterval(timerInterval);
@@ -1570,10 +1571,10 @@ function handleCorrect(e) {
   btn.appendChild(rip);
   setTimeout(() => rip.remove(), 600);
 
-  levelCorrect++;    // total correct answers (including retries of same card)
-  answeredCount++;   // unique correct answers — drives level-up at 15
+  levelCorrect++;    // correct answers this level (1 per card = 1 star)
+  answeredCount++;   // drives level-up at 5
 
-  totalStars = Math.min(Math.floor(levelCorrect / STEP), STARS_TOTAL);
+  totalStars = Math.min(levelCorrect, STARS_TOTAL);
   levelStars = totalStars;
 
   document.getElementById('scoreDisplay').textContent = totalStars + (totalStars === 1 ? ' estrela' : ' estrelas');
@@ -1587,10 +1588,9 @@ function renderCelebrationStars() {
   const container = document.getElementById('celStars');
   container.innerHTML = '';
 
-  // How many full stars to show now
-  const filledNow = Math.min(Math.floor(levelCorrect / STEP), STARS_TOTAL);
-  // Was a new star just earned on this answer?
-  const newStarEarned = levelCorrect % STEP === 0 && filledNow > 0;
+  const filledNow = Math.min(levelCorrect, STARS_TOTAL);
+  // Every correct answer earns a new star (STEP = 1)
+  const newStarEarned = true;
 
   for (let i = 0; i < STARS_TOTAL; i++) {
     const s = document.createElement('div');
@@ -1601,14 +1601,12 @@ function renderCelebrationStars() {
     container.appendChild(s);
   }
 
-  // subtitle
   const sub = document.getElementById('cel-sub');
-  if (newStarEarned) {
-    sub.textContent = '⭐ Nova estrela conquistada!';
+  if (filledNow >= STARS_TOTAL) {
+    sub.textContent = '🏆 5 estrelas! Passando de nível!';
   } else {
-    const remaining = (Math.ceil(levelCorrect / STEP) * STEP) - levelCorrect;
-    sub.textContent = `Mais ${remaining} acerto${remaining > 1 ? 's' : ''} para a próxima estrela!`;
-    if (filledNow === STARS_TOTAL) sub.textContent = '🏆 5 estrelas! Incrível!';
+    const remaining = STARS_TOTAL - filledNow;
+    sub.textContent = `⭐ +1 estrela! Faltam ${remaining} para o próximo nível!`;
   }
 }
 

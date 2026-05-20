@@ -2,7 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <title>Desenha Comigo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -956,6 +958,175 @@
   .review-card .ob-card-icon { font-size: 24px; margin-bottom: 6px; }
   .review-card .ob-card-title { font-size: 14px; margin-bottom: 6px; }
   .review-card .ob-card-body { font-size: 11.5px; }
+  /* ════════════════════════════════
+     RESPONSIVE — iPhone (≤ 430px)
+     Adult zone: compact strip on top
+     Child zone: fills remaining height
+  ════════════════════════════════ */
+  @media (max-width: 600px) {
+
+    html, body { overflow: hidden; }
+
+    /* ROOT: vertical stack */
+    #app {
+      flex-direction: column;
+      height: 100svh;
+    }
+
+    /* ── ADULT ZONE: compact top strip ── */
+    #adult-zone {
+      width: 100%;
+      flex-shrink: 0;
+      padding: 10px 12px 8px;
+      gap: 6px;
+    }
+    #adult-zone::after {
+      right: auto; bottom: 0; top: auto;
+      left: 0; width: 100%; height: 1px;
+    }
+
+    .zone-label { font-size: 9px; margin-bottom: 0; }
+
+    /* Card: compact, horizontal layout */
+    #card {
+      padding: 10px 12px 8px;
+      border-radius: var(--radius-md);
+    }
+    .card-meta { font-size: 9px; margin-bottom: 4px; }
+    .card-progress { margin-bottom: 6px; gap: 3px; }
+    .card-pip { height: 2px; }
+    #card-text { font-size: 18px; min-height: unset; line-height: 1.15; }
+    .card-stars { margin-top: 5px; }
+
+    /* Hint button: compact inline */
+    #hint-btn { padding: 7px 10px; font-size: 12px; border-radius: var(--radius-sm); }
+    .hint-ico { width: 22px; height: 22px; font-size: 12px; }
+    #hint-text { display: none; }
+
+    /* Timer: slimmer */
+    .timer-section { gap: 4px; }
+    .timer-row { gap: 0; }
+    .timer-label { font-size: 9px; }
+    #timer-display { font-size: 20px; }
+    .timer-track { height: 7px; }
+
+    /* Hide dividers and level badge on mobile to save space */
+    .divider { display: none; }
+    #levelBadge { display: none; }
+
+    /* Decision buttons: side by side in a row */
+    .decision-section {
+      margin-top: 0;
+      flex-direction: row;
+      gap: 6px;
+    }
+    .dec-label { display: none; }
+    .btn-correct { height: 40px; font-size: 13px; border-radius: var(--radius-sm); }
+    .btn-retry   { height: 40px; font-size: 13px; border-radius: var(--radius-sm); }
+
+    /* Restart button: hide on mobile (available in menu later) */
+    #btn-restart { display: none; }
+
+    /* ── CHILD ZONE: fill remaining space ── */
+    #child-zone {
+      flex: 1;
+      padding: 8px 10px 6px;
+      gap: 6px;
+      min-height: 0;
+    }
+
+    .child-header { gap: 6px; }
+    .child-zone-label { font-size: 9px; letter-spacing: 1px; }
+    #how-to-btn { font-size: 10px; padding: 4px 9px; }
+    .child-score { font-size: 11px; padding: 4px 9px; }
+    .score-star { width: 11px; height: 11px; }
+
+    /* Canvas: fills all available space */
+    #canvas-wrap {
+      border-radius: var(--radius-md);
+      border-width: 2px;
+    }
+    .canvas-placeholder .ph-icon { font-size: 36px; }
+    .canvas-placeholder p { font-size: 12px; }
+
+    .timeup-icon { width: 54px; height: 54px; font-size: 26px; }
+    .timeup-title { font-size: 18px; }
+    .timeup-sub { font-size: 11px; }
+
+    /* Toolbar: compact, wrap if needed */
+    #toolbar {
+      padding: 5px 8px;
+      gap: 5px;
+      border-radius: var(--radius-md);
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tool-sep { height: 20px; }
+    .tool-btn { width: 34px; height: 34px; font-size: 16px; border-radius: 8px; flex-shrink: 0; }
+    .size-btns { gap: 3px; }
+    .size-btn { width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0; }
+    .color-dot { width: 26px; height: 26px; flex-shrink: 0; }
+    #clear-btn { padding: 0 8px; height: 34px; font-size: 10px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; }
+
+    /* ── ONBOARDING: full screen vertical ── */
+    #onboarding { padding: 20px 16px; justify-content: flex-start; overflow-y: auto; }
+    .ob-logo-img { width: 160px; margin-top: 10px; }
+    .ob-subtitle { font-size: 10px; margin-bottom: 16px; }
+    .ob-dots { margin-bottom: 12px; }
+    .ob-stack { width: 100%; height: auto; min-height: 260px; margin-bottom: 16px; }
+    .ob-card { border-radius: 16px; padding: 18px 16px 16px; }
+    .ob-card-title { font-size: 15px; }
+    .ob-card-body { font-size: 11px; }
+    .ob-btn { width: 100%; height: 46px; font-size: 14px; border-radius: var(--radius-md); }
+    .ob-back-btn { width: 100%; }
+
+    /* ── CELEBRATION ── */
+    .cel-emoji { font-size: 44px; }
+    .cel-title { font-size: 22px; }
+    .cel-stars { gap: 8px; }
+    .cel-star { width: 28px; height: 28px; }
+    .cel-sub { font-size: 12px; }
+    .cel-next { padding: 10px 22px; font-size: 14px; }
+
+    /* ── LEVEL-UP ── */
+    .lup-ico { font-size: 54px; }
+    .lup-title { font-size: 22px; }
+    .lup-sub { font-size: 13px; }
+    .lup-btn { padding: 12px 28px; font-size: 14px; }
+
+    /* ── HINT POPUP ── */
+    #hint-popup { min-width: 180px; padding: 16px 18px; border-radius: var(--radius-lg); }
+    #hint-popup .hint-popup-icon { font-size: 26px; }
+    #hint-popup p { font-size: 15px; }
+
+    /* ── CONFIRM MODAL ── */
+    .confirm-box { width: calc(100vw - 40px); padding: 22px 20px 18px; }
+
+    /* ── REVIEW MODAL ── */
+    .review-box { width: calc(100vw - 32px); padding: 18px 16px 14px; }
+  }
+
+  /* Extra small (iPhone SE, 375px) */
+  @media (max-width: 390px) {
+    #card-text { font-size: 16px; }
+    .color-dot { width: 22px; height: 22px; }
+    .tool-btn { width: 30px; height: 30px; font-size: 14px; }
+    .size-btn { width: 25px; height: 25px; }
+    #clear-btn { padding: 0 6px; font-size: 9px; }
+  }
+  @media (max-width: 600px) {
+    #adult-zone {
+      padding-top: max(10px, env(safe-area-inset-top));
+      padding-left: max(12px, env(safe-area-inset-left));
+      padding-right: max(12px, env(safe-area-inset-right));
+    }
+    #child-zone {
+      padding-bottom: max(6px, env(safe-area-inset-bottom));
+      padding-left: max(10px, env(safe-area-inset-left));
+      padding-right: max(10px, env(safe-area-inset-right));
+    }
+  }
 </style>
 </head>
 <body>

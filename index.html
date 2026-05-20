@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-<title>Rabiscoo</title>
+<title>Desenha Comigo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
@@ -770,16 +770,12 @@
     opacity: 0; pointer-events: none;
   }
 
-  .ob-logo {
-    font-size: 38px;
-    margin-bottom: 6px;
-    animation: lup-float 3s ease-in-out infinite alternate;
-  }
-  .ob-title {
-    font-family: var(--font-main);
-    font-size: 22px; font-weight: 900;
-    color: #fff; letter-spacing: -0.5px;
-    margin-bottom: 4px;
+  .ob-logo-img {
+    width: 220px;
+    height: auto;
+    margin-bottom: 2px;
+    border-radius: 20px;
+    animation: fadein .6s ease both;
   }
   .ob-subtitle {
     font-size: 12px; font-weight: 600;
@@ -970,8 +966,7 @@
        ONBOARDING OVERLAY
   ══════════════════════════════ -->
   <div id="onboarding">
-    <div class="ob-logo">🎨</div>
-    <div class="ob-title">Desenha Comigo</div>
+    <img src="rabiscoo-logo.gif" class="ob-logo-img" alt="Rabiscoo — Vamos Aprender!"/>
     <div class="ob-subtitle">GUIA RÁPIDO PARA OS PAIS</div>
 
     <div class="ob-dots">

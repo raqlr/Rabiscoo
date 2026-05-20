@@ -1,2 +1,2 @@
 # Rabiscoo
-Jogo interativo
+Link do website: raqlr.github.io/RabiscooWeb/

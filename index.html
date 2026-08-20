@@ -223,6 +223,15 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 16px; flex-shrink: 0;
   }
+
+  /* Rubric (adult evaluation) */
+  .rubric { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .rubric .criteria { display: flex; gap: 10px; align-items: center; }
+  .rubric .criteria label { font-size: 13px; color: rgba(0,0,0,0.65); }
+  @media (max-width: 480px) {
+    .rubric { gap: 6px; }
+    .rubric .criteria { flex-direction: row; flex-wrap: wrap; gap: 8px; }
+  }
   .level-info { flex: 1; min-width: 0; }
   .level-title { font-size: 11px; font-weight: 800; color: rgba(0,0,0,0.55); letter-spacing: .5px; }
   .level-xp-track { height: 4px; background: rgba(0,0,0,0.12); border-radius: 99px; margin-top: 4px; overflow: hidden; }
@@ -1315,6 +1324,25 @@
       <button class="btn-retry" onclick="handleRetry()">
         ↩ Tentar novamente
       </button>
+      <!-- Structured rubric (optional) -->
+      <div class="rubric" id="rubric">
+        <fieldset aria-labelledby="rubric-legend">
+          <legend id="rubric-legend" style="font-size:12px;font-weight:700;margin-bottom:6px">Opcional: avaliação detalhada</legend>
+          <div class="criteria">
+            <input type="checkbox" id="rubric-recognizable" name="rubric" />
+            <label for="rubric-recognizable">Reconhecível</label>
+          </div>
+          <div class="criteria">
+            <input type="checkbox" id="rubric-effort" name="rubric" />
+            <label for="rubric-effort">Detalhes / esforço</label>
+          </div>
+          <div class="criteria">
+            <input type="checkbox" id="rubric-creative" name="rubric" />
+            <label for="rubric-creative">Criativo</label>
+          </div>
+        </fieldset>
+        <button id="rubricSubmit" class="btn-correct" aria-label="Submit rubric evaluation" onclick="submitRubricEvaluation()">Enviar avaliação</button>
+      </div>
     </div>
 
     <!-- Restart button -->
@@ -1758,6 +1786,14 @@ function loadNextCard() {
   }
   currentCard = deck.shift();
   buildCardUI(currentCard);
+  // enable rubric and controls for the new card
+  const btnCorrectEl = document.getElementById('btnCorrect');
+  if (btnCorrectEl) btnCorrectEl.disabled = false;
+  const rs = document.getElementById('rubricSubmit');
+  if (rs) rs.disabled = false;
+  ['rubric-recognizable','rubric-effort','rubric-creative'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.checked = false;
+  });
   clearCanvas();
   startTimer();
   closeHint();
@@ -1788,6 +1824,9 @@ const ANSWERS_TOTAL = 5; // 5 correct answers to complete a level
 const STEP = 1;          // 1 star per correct answer
 
 function handleCorrect(e) {
+  // disable rubric to prevent double-submit
+  const rsBtn = document.getElementById('rubricSubmit'); if (rsBtn) rsBtn.disabled = true;
+  const corrBtn = document.getElementById('btnCorrect'); if (corrBtn) corrBtn.disabled = true;
   clearInterval(timerInterval);
 
   // ripple
@@ -1810,6 +1849,23 @@ function handleCorrect(e) {
   renderCelebrationStars();
   spawnConfetti();
   document.getElementById('celebration').classList.add('show');
+}
+
+function submitRubricEvaluation() {
+  // Read rubric checkboxes and map conservatively to existing correct/retry flow
+  const submitBtn = document.getElementById('rubricSubmit'); if (submitBtn) submitBtn.disabled = true;
+  const corrBtn = document.getElementById('btnCorrect'); if (corrBtn) corrBtn.disabled = true;
+  const c1 = document.getElementById('rubric-recognizable')?.checked ? 1 : 0;
+  const c2 = document.getElementById('rubric-effort')?.checked ? 1 : 0;
+  const c3 = document.getElementById('rubric-creative')?.checked ? 1 : 0;
+  const total = c1 + c2 + c3;
+  // Conservative mapping: any positive selection => treat as correct (1 star);
+  // zero selections => treat as retry.
+  if (total > 0) {
+    handleCorrect();
+  } else {
+    handleRetry();
+  }
 }
 
 function renderCelebrationStars() {
